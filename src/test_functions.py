@@ -57,3 +57,12 @@ def test_remove_personal_info_returns_correct_columns():
     print(actual)
     #assert expected == actual
     assert_index_equal(expected, actual, check_names =True)
+    
+def test_contains_digit():
+    #Arrange
+    mock_string = "1 Apple"
+    expected = True
+    #Actual 
+    actual = contains_digit(mock_string)
+    #Assert
+    assert expected == actual
