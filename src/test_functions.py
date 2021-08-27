@@ -40,7 +40,7 @@ def test_remove_personal_information_returns_card_provider_without_identifiable_
     #arrange 
     data_test_csv = "data_test" 
     expected = pa.DataFrame(columns=["datetime","location","product","payment_method","amount_paid","order_id","card_provider"])
-    mock_row = {"datetime": NULL,"location": NULL,"product": NULL,"payment_method": NULL,"amount_paid": NULL,"order_id": NULL,"card_provider": "americanexpress"}
+    mock_row = {"datetime": None,"location": None,"product": None,"payment_method": None,"amount_paid": None,"order_id": None,"card_provider": "americanexpress"}
     expected = expected.append(mock_row, ignore_index= True)
     expected = expected["card_provider"][0]
     actual = functions.remove_personal_info(data_test_csv)
