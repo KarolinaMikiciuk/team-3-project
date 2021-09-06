@@ -47,7 +47,7 @@ def size_fix(individual_items):
 
 
 def remove_personal_info(category):
-    orders_df = pa.read_csv(f"{category}.csv",sep=",",names=["datetime","location","customer_name","product","payment_method","amount_paid","card_provider"])
+    orders_df = pa.read_csv(f"/home/mrfox/Desktop/projekt/team-3-project/src/lambda-service/{category}.csv",sep=",",names=["datetime","location","customer_name","product","payment_method","amount_paid","card_provider"])
     orders_df = orders_df.drop(columns="customer_name")
     orders_df['order_id'] = np.arange(orders_df.shape[0])
 
