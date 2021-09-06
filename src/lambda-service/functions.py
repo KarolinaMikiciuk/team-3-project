@@ -1,5 +1,21 @@
 import pandas as pa
 import numpy as np
+from sqlalchemy import create_engine
+
+engine = create_engine('postgresql+psycopg2://root:password@localhost:5432/team_3')
+
+def return_start_id():
+    with engine.connect() as conn:
+        is_empty = conn.execute("SELECT True FROM basket LIMIT 1;").fetchone()
+        if is_empty == "NULL":
+            return 0
+        else:
+            record_tuple = conn.execute("SELECT * FROM basket ORDER BY order_id DESC LIMIT 1;").fetchone()
+            conn.close()
+
+        start = record_tuple[0]
+        return start
+
 
 def contains_digit(string):
     comparison = list(string)
