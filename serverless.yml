@@ -1,0 +1,44 @@
+service: team-3-etl
+
+frameworkVersion: '2'
+
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+
+  region: eu-west-1
+
+  iam:
+    role:
+      permissionsBoundary: arn:aws:iam::883232869702:policy/ScopePermissions
+
+functions:
+  lambda-service:
+    handler: handler.handle
+    timeout: 300 
+    layers: 
+      - !Ref PythonRequirementsLambdaLayer
+
+package:
+  individually: true
+  include: 
+    - src/**
+    - handler.py
+  exclude:
+    - "*"
+    - "*/**"
+  excludeDevDependencies: false
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    slim: true
+    layer: true
+    pythonBin: python3
+    dockerizePip: true
+      # useStaticCache: false
+    useDownloadCache: false
