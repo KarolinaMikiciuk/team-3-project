@@ -3,7 +3,7 @@ import boto3
 import pandas as pa
 import io
 
-def handle(event):
+def handle(event, c):
     # Get key and bucket informaition
     key = event['Records'][0]['s3']['object']['key']
     bucket = event['Records'][0]['s3']['bucket']['name']
@@ -14,5 +14,5 @@ def handle(event):
     data = s3_object['Body'].read().decode('utf-8')
     
     # read CSV
-    df = pa.read_csv_file(io.StringIO(data))   
+    df = pa.read_csv(io.StringIO(data))   
     print(df)
