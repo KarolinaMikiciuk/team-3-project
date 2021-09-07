@@ -1,7 +1,6 @@
-
 import boto3
-import pandas as pa
-import io
+from src.service import cleanse_pid
+
 
 def handle(event, c):
     # Get key and bucket informaition
@@ -13,6 +12,5 @@ def handle(event, c):
     s3_object = s3.get_object(Bucket = bucket, Key = key)
     data = s3_object['Body'].read().decode('utf-8')
     
-    # read CSV
-    df = pa.read_csv(io.StringIO(data))   
-    print(df)
+    cleanse_pid.the_etl_pipe_function(data)
+    

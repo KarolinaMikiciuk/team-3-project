@@ -14,7 +14,7 @@ provider:
     role: arn:aws:iam::883232869702:role/data-lambda-role 
 
 functions:
-  lambda-service:
+  service: #renamed lambda-service as service
     handler: handler.handle
     timeout: 300 
     layers: 
