@@ -48,7 +48,8 @@ def size_fix(individual_items):
 
 
 def remove_personal_info(data):
-    orders_df = pa.read_csv(data,sep=",",names=["datetime","location","customer_name","product","payment_method","amount_paid","card_provider"])
+   
+    orders_df = pa.read_csv(data.get("Body"),sep=",",names=["datetime","location","customer_name","product","payment_method","amount_paid","card_provider"])
     orders_df = orders_df.drop(columns="customer_name")
     orders_df['order_id'] = np.arange(orders_df.shape[0])
 
