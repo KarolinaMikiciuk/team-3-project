@@ -1,7 +1,7 @@
 import pandas as pa
 import numpy as np
 from sqlalchemy import create_engine
-#import io 
+import io 
 
 engine = create_engine('postgresql+psycopg2://root:password@localhost:5432/team_3')
 
@@ -47,10 +47,10 @@ def size_fix(individual_items):
     return product_list
 
 
-def remove_personal_info(data):
+def remove_personal_info(orders_df):
    
-    orders_df = pa.read_csv(data.get("Body"),sep=",",names=["datetime","location","customer_name","product","payment_method","amount_paid","card_provider"])
-    orders_df = orders_df.drop(columns="customer_name")
+    #orders_df = pa.read_csv(io.StringIO(csv_string),names=["datetime","location","customer_name","product","payment_method","amount_paid","card_provider"])
+    #orders_df = orders_df.drop(columns="customer_name")
     orders_df['order_id'] = np.arange(orders_df.shape[0])
 
     credit_card_number_list = orders_df["card_provider"].tolist()

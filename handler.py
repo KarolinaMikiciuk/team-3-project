@@ -1,7 +1,7 @@
 import boto3
 from src.service import cleanse_pid
 import pandas as pa
-from csv import reader
+import io
 
 def handle(event, c):
     # Get key and bucket informaition
@@ -11,10 +11,18 @@ def handle(event, c):
     # use boto3 library to get object from S3
     s3_client = boto3.client('s3')
     s3_object_response = s3_client.get_object(Bucket = bucket, Key = key)
-    #data = s3_object_response['Body'].read().decode('utf-8')
-    # i think the line above returns list of lists, where each row is a list
-    #no headers in our csv
-    cleanse_pid.the_etl_pipe_function(s3_object_response)
+    #s3_object_response is a dict type that contains all sorts of metadata 
+    #related to the request sent
+    csv_string = s3_object_response['Body'].read().decode('utf-8')
+    #csv_string is <class : str>
+
+    #making a dataframe out of the csv_string
+    csv_dataframe = pa.read_csv(io.StringIO(csv_string))
+    csv_dataframe.columns = ["datetime","location","customer_name","product","amount_paid","payment_method","card_provider"]
+    csv_dataframe = csv_dataframe.drop(columns=["customer_name","card_provider"])
+    print(csv_dataframe.head(20))
+
+    cleanse_pid.the_etl_pipe_function(csv_dataframe)
     
     
     

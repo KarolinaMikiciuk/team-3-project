@@ -7,7 +7,6 @@ order_id INT PRIMARY KEY,
 location VARCHAR(200) NOT NULL,
 payment_method VARCHAR(15) NOT NULL,
 amount_paid FLOAT NOT NULL,
-card_provider VARCHAR(100) NOT NULL
 );
 """
 

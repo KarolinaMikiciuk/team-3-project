@@ -1,12 +1,13 @@
 import pandas as pa
-from src.service.functions import remove_personal_info, clean_products, return_item_tuples, write_into_dataframe, return_start_id
-from sqlalchemy import create_engine  
+from src.service.functions import  clean_products, return_item_tuples, write_into_dataframe, return_start_id
+from sqlalchemy import create_engine 
+import numpy as np 
 
-def the_etl_pipe_function(data):
+def the_etl_pipe_function(orders_df):
     #8080 is just the adminer, not the database
     engine = create_engine('postgresql+psycopg2://root:password@localhost:5432/team_3')
 
-    orders_df = remove_personal_info(data)
+    orders_df['order_id'] = np.arange(orders_df.shape[0])
 
     basket_table = pa.concat([orders_df['product'], orders_df['order_id']], axis=1, keys=['product', 'order_id'])
     orders_df = orders_df.drop(columns="product")
@@ -19,5 +20,6 @@ def the_etl_pipe_function(data):
 
     first_id = return_start_id()
     orders_df['order_id'] = range(first_id, first_id+len(orders_df))
+    
     orders_df.to_sql('orders', engine,if_exists="append",index=False)
     basket_table_data.to_sql('basket', engine, if_exists="append",index=False)
