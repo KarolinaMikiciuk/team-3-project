@@ -1,12 +1,12 @@
 import pandas as pa
 import numpy as np
-from sqlalchemy import create_engine
-import io 
+#from sqlalchemy import create_engine
 
-engine = create_engine('postgresql+psycopg2://root:password@localhost:5432/team_3')
 
-def return_start_id():
-    with engine.connect() as conn:
+# engine = create_engine('postgresql+psycopg2://root:password@localhost:5432/team_3')
+
+def return_start_id(connection):
+    with connection as conn:
         is_empty = conn.execute("SELECT True FROM basket LIMIT 1;").fetchone()
         if is_empty == "NULL":
             return 0
@@ -47,7 +47,7 @@ def size_fix(individual_items):
     return product_list
 
 
-def remove_personal_info(orders_df):
+def remove_personal_info(orders_df):   #legacy
    
     #orders_df = pa.read_csv(io.StringIO(csv_string),names=["datetime","location","customer_name","product","payment_method","amount_paid","card_provider"])
     #orders_df = orders_df.drop(columns="customer_name")

@@ -1,7 +1,9 @@
 import boto3
 from src.service import cleanse_pid
 import pandas as pa
-import io
+import io   
+from src.service.db_connect import create_connection
+
 
 def handle(event, c):
     # Get key and bucket informaition
@@ -22,7 +24,9 @@ def handle(event, c):
     csv_dataframe = csv_dataframe.drop(columns=["customer_name","card_provider"])
     print(csv_dataframe.head(20))
 
-    cleanse_pid.the_etl_pipe_function(csv_dataframe)
+    connection = create_connection()
+
+    cleanse_pid.the_etl_pipe_function(csv_dataframe,connection)
     
     
     
