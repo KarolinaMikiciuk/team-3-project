@@ -1,5 +1,6 @@
 import boto3
 import psycopg2
+from sqlalchemy import create_engine
 
 def create_connection():
     client = boto3.client('redshift', region_name='eu-west-1')
@@ -17,7 +18,7 @@ def create_connection():
         ClusterIdentifier=REDSHIFT_CLUSTER,
         DurationSeconds=3600)
 
-    connection = psycopg2.connect(   #normal
+    connection_type_1 = psycopg2.connect(   #normal
         user=creds['DbUser'],           #temporary credentials from aws-credentials-getter
         password=creds['DbPassword'],
         host=REDSHIFT_HOST,
@@ -25,6 +26,16 @@ def create_connection():
         port=5439
     )
 
-    #run creation of tables manually
-    return connection
+    link = f"postgresql+psycopg2://{creds['DbUser']}:{creds['DbPassword']}@REDSHIFT_HOST:5439/REDSHIFT_DATABASE"
+    #changed sqlalchemy to redshift
+    #added .redshift.amazonaws.com
 
+    connection_type_2 = create_engine(link)
+
+    #run creation of tables manually
+    return connection_type_2
+
+#reference:
+#dialect+driver://username:password@host:port/database
+
+ 

@@ -1,21 +1,25 @@
 import pandas as pa
 import numpy as np
+import psycopg2
 #from sqlalchemy import create_engine
 
 
 # engine = create_engine('postgresql+psycopg2://root:password@localhost:5432/team_3')
 
 def return_start_id(connection):
-    with connection as conn:
-        is_empty = conn.execute("SELECT True FROM basket LIMIT 1;").fetchone()
-        if is_empty == "NULL":
+    with connection.connect() as conn:
+
+        is_empty = conn.execute("SELECT True FROM basket LIMIT 1;")
+        if is_empty == None:
+            conn.close()
             return 0
         else:
-            record_tuple = conn.execute("SELECT * FROM basket ORDER BY order_id DESC LIMIT 1;").fetchone()
+            #returns a tuple where each entry is a column entry; returns the whole row 
+            record_tuple = conn.execute("SELECT * FROM basket ORDER BY order_id DESC LIMIT 1;")
             conn.close()
 
-        start = record_tuple[0]
-        return start
+            start = record_tuple[0]
+            return start
 
 
 def contains_digit(string):

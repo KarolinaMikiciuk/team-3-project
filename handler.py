@@ -22,7 +22,6 @@ def handle(event, c):
     csv_dataframe = pa.read_csv(io.StringIO(csv_string))
     csv_dataframe.columns = ["datetime","location","customer_name","product","amount_paid","payment_method","card_provider"]
     csv_dataframe = csv_dataframe.drop(columns=["customer_name","card_provider"])
-    print(csv_dataframe.head(20))
 
     connection = create_connection()
 
