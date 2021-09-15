@@ -1,6 +1,8 @@
 import boto3
-import psycopg2
+import sqlalchemy
 from sqlalchemy import create_engine
+from urllib.parse import quote_plus
+
 
 def create_connection():
     client = boto3.client('redshift', region_name='eu-west-1')
@@ -17,25 +19,28 @@ def create_connection():
         DbName=REDSHIFT_DATABASE,
         ClusterIdentifier=REDSHIFT_CLUSTER,
         DurationSeconds=3600)
-
-    connection_type_1 = psycopg2.connect(   #normal
-        user=creds['DbUser'],           #temporary credentials from aws-credentials-getter
-        password=creds['DbPassword'],
-        host=REDSHIFT_HOST,
-        database=REDSHIFT_DATABASE,   
-        port=5439
+    
+    connect_url = sqlalchemy.engine.url.URL(
+    'postgresql+psycopg2',
+    username=creds['DbUser'],
+    password= quote_plus(creds['DbPassword']),
+    host= REDSHIFT_HOST,
+    port= 5439
     )
 
-    link = f"postgresql+psycopg2://{creds['DbUser']}:{creds['DbPassword']}@REDSHIFT_HOST:5439/REDSHIFT_DATABASE"
-    #changed sqlalchemy to redshift
-    #added .redshift.amazonaws.com
-
-    connection_type_2 = create_engine(link)
+    engine_string = "postgresql+psycopg2://%s:%s@%s:%d/%s" % (
+    quote_plus(creds['DbUser']),
+    quote_plus(creds['DbPassword']),
+    REDSHIFT_HOST,
+    5439,
+    REDSHIFT_DATABASE
+    )
+    
+    engine = create_engine(engine_string)
+    connection =engine.connect()
 
     #run creation of tables manually
-    return connection_type_2
+    return connection
 
-#reference:
-#dialect+driver://username:password@host:port/database
 
  

@@ -1,12 +1,17 @@
 import pandas as pa
-from src.service.functions import clean_products, return_item_tuples, write_into_dataframe, return_start_id
-#import sqlalchemy
+from src.service.functions import adjust_timestamp
+from src.service.functions import clean_products
+from src.service.functions import return_item_tuples
+from src.service.functions import write_into_dataframe
+from src.service.functions import return_start_id
+
 import numpy as np 
 
 
 def the_etl_pipe_function(orders_df,connection):
 
     orders_df['order_id'] = np.arange(orders_df.shape[0])
+    orders_df = adjust_timestamp(orders_df)
 
     basket_table = pa.concat([orders_df['product'], orders_df['order_id']], axis=1, keys=['product', 'order_id'])
     orders_df = orders_df.drop(columns="product")

@@ -1,5 +1,6 @@
 import pandas as pa
 import numpy as np
+import datetime
 import psycopg2
 #from sqlalchemy import create_engine
 
@@ -120,3 +121,21 @@ def write_into_dataframe(the_tuples):
     df = pa.DataFrame(value_dictionary)
     return df 
 
+
+def adjust_timestamp(orders_df):
+    
+    timestamp_list = orders_df['datetime'].tolist()
+    for x in range(len(timestamp_list)):
+        timestamp_list[x] = timestamp_list[x].replace("/", "-")
+        
+    orders_df = orders_df.drop(columns="datetime")
+    orders_df['datetime'] = pa.Series(timestamp_list)
+
+    for x in range(len(timestamp_list)):
+        orders_df['datetime'].values[x] = datetime.strptime(orders_df['datetime'].values[x], '%d-%m-%Y %H:%M')
+        orders_df['datetime'].values[x] = datetime.strftime(orders_df['datetime'].values[x],'%Y-%m-%d %H:%M')
+        orders_df['datetime'].values[x] = orders_df['datetime'].values[x] + ":00"
+
+    pa.to_datetime(orders_df['datetime'].values)
+    
+    return orders_df
