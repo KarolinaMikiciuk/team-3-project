@@ -26,7 +26,7 @@ functions:
     handler: handler.handle
     timeout: 300 
     layers: 
-      - !Ref PythonRequirementsLambdaLayer
+      -!Ref PythonRequirementsLambdaLayer
     events:
       - s3:
           bucket: gen-x1-team-3-data-in

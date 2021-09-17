@@ -1,7 +1,8 @@
 import pandas as pa
 import numpy as np
-import datetime
+from datetime import datetime
 import psycopg2
+import re
 #from sqlalchemy import create_engine
 
 
@@ -10,16 +11,17 @@ import psycopg2
 def return_start_id(connection):
     with connection.connect() as conn:
 
-        is_empty = conn.execute("SELECT True FROM basket LIMIT 1;")
-        if is_empty == None:
-            conn.close()
+        record_object = conn.execute("SELECT * FROM basket ORDER BY order_id DESC LIMIT 1;")
+        list_of_rows = record_object.all()
+        conn.close()
+        
+        if len(list_of_rows) == 0:
             return 0
+            
         else:
-            #returns a tuple where each entry is a column entry; returns the whole row 
-            record_tuple = conn.execute("SELECT * FROM basket ORDER BY order_id DESC LIMIT 1;")
-            conn.close()
-
-            start = record_tuple[0]
+            start = list_of_rows[0]
+            start = start[0]
+            print(start)
             return start
 
 
@@ -72,23 +74,31 @@ def remove_personal_info(orders_df):   #legacy
     orders_df['card_provider'] = pa.Series(new_list)
 
     return orders_df
-
+    
 def clean_products(items_list):
     full_list = []
-    for entry in items_list:
-        individual_items = entry.split(",")  #split into a list 
-        individual_items = list(filter(None, individual_items)) #get rid of empty strings
-        individual_items = size_fix(individual_items)
-        for item in individual_items:
-            if contains_digit(item) == True:  #get rid of strings that contain digits
-                individual_items.remove(item)
-        full_list.append(individual_items)
+    list_of_order_lists = []
+    for order in items_list:
+        individual_items = order.split(',')
+        list_of_order_lists.append(individual_items)
+    for order_list in list_of_order_lists:
+        new_order_list = []
+        for string in order_list:
+            no_number_string = re.sub(r'[0-9]+', '', string)
+            clean_string = no_number_string.replace(" - .","")
+            new_order_list.append(clean_string.strip())
+        full_list.append(new_order_list)
+    # for order in no_number_list:
+    #     order_string = ','.join(order)
+    #     full_list.append(order_string)
     return full_list
 
-
-def return_item_tuples(my_products):
+def return_item_tuples(my_products, start):
     list_of_tuples = []
-    i = 0
+    if start == 0:
+        i = 0
+    else:
+        i = start + 1
     for order_list in my_products:
         in_list = []
         q = 1
@@ -103,7 +113,6 @@ def return_item_tuples(my_products):
                         q += 1
                         tuple_list[2] = q
         i += 1
-
     return list_of_tuples
 
 def write_into_dataframe(the_tuples):
@@ -119,6 +128,7 @@ def write_into_dataframe(the_tuples):
         quantity_list.append(quantity)
     value_dictionary = {"product": product_list, "order_id" : order_id_list, "quantity" : quantity_list}
     df = pa.DataFrame(value_dictionary)
+    print(df)
     return df 
 
 
